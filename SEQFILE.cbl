@@ -1,0 +1,26 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. READFILE.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUT-FILE ASSIGN TO 'inputfile.txt'
+           ORGANIZATION IS LINE SEQUENTIAL
+          FILE STATUS IS WS-STATUS.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  INPUT-FILE.
+       01  INPUT-RECORD.
+           05  INPUT-DATA    PIC X(80).
+       WORKING-STORAGE SECTION.
+       01  WS-STATUS         PIC XX.
+           88  EndOfFile       VALUE '10'.
+           88  NoErrors        VALUE '00'.
+       PROCEDURE DIVISION.
+       MAIN-PROCEDURE.
+           OPEN INPUT INPUT-FILE.
+               READ INPUT-FILE.
+           PERFORM UNTIL WS-STATUS NOT EQUAL TO '00'
+           DISPLAY INPUT-DATA
+           END-PERFORM.
+               CLOSE INPUT-FILE.
+           STOP RUN.
