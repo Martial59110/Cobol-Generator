@@ -27,6 +27,7 @@
 
 
                IF WS-CHOICE2 EQUAL "O" OR WS-CHOICE3 EQUAL "O"
+               OR WS-CHOICE4 EQUAL "O"
 
            MOVE 
            "           SELECT OUTPUT-FILE ASSIGN TO 'outputfile.txt'" 
@@ -51,6 +52,31 @@
            WRITE OUTPUT-LINE
 
               END-IF.
+
+           IF WS-CHOICE4 EQUAL "O"
+
+           MOVE 
+           "           SELECT MERGE-INPUT-FILE-1 ASSIGN TO 'file1.txt'" 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "           ORGANIZATION IS LINE SEQUENTIAL" 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "           FILE STATUS IS WS-STATUS-MERGE-1."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE 
+           "           SELECT MERGE-INPUT-FILE-2 ASSIGN TO 'file2.txt'" 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "           ORGANIZATION IS LINE SEQUENTIAL" 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "           FILE STATUS IS WS-STATUS-MERGE-2."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+
+           END-IF.
 
            WRITE OUTPUT-LINE FROM SPACE.
            MOVE "       DATA DIVISION." TO OUTPUT-LINE.
@@ -89,6 +115,7 @@
 
 
            IF WS-CHOICE2 EQUAL "O" OR WS-CHOICE3 EQUAL "O"
+           OR WS-CHOICE4 EQUAL "O"
 
            MOVE "       FD  OUTPUT-FILE." TO OUTPUT-LINE
            WRITE OUTPUT-LINE
@@ -112,9 +139,34 @@
            MOVE "          05  SORT-DATA    PIC X(80)."
            TO OUTPUT-LINE
            WRITE OUTPUT-LINE
+           WRITE OUTPUT-LINE FROM SPACE
+           END-IF.
+           
+           IF WS-CHOICE4 EQUAL "O"
+
+           MOVE "       FD  MERGE-INPUT-FILE-1."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "        01  MERGE-RECORD-1."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "          05  MERGE-DATA-1  PIC X(80)."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           WRITE OUTPUT-LINE FROM SPACE
+
+           MOVE "       FD  MERGE-INPUT-FILE-2."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "        01  MERGE-RECORD-2."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "          05  MERGE-DATA-2  PIC X(80)."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           WRITE OUTPUT-LINE FROM SPACE
 
            END-IF.
-
 
            WRITE OUTPUT-LINE FROM SPACE.
            MOVE "       WORKING-STORAGE SECTION." 
@@ -140,6 +192,7 @@
            END-IF.
 
            IF WS-CHOICE2 EQUAL "O" OR WS-CHOICE3 EQUAL "O"
+           OR WS-CHOICE4 EQUAL "O"
 
            MOVE "       01  WS-STATUS-OUTPUT  PIC XX." 
            TO OUTPUT-LINE
@@ -152,6 +205,25 @@
            WRITE OUTPUT-LINE
 
            END-IF.
+
+            IF WS-CHOICE4 EQUAL "O"
+
+             MOVE "       01  WS-STATUS-MERGE-1 PIC XX." 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "           88  NoError1  VALUE '00'. "
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "         01  WS-STATUS-MERGE-2 PIC XX." 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "           88  NoError2  VALUE '00'. "
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+
+            END-IF.
+
+
            WRITE OUTPUT-LINE FROM SPACE.
            MOVE "       PROCEDURE DIVISION." TO OUTPUT-LINE.
            WRITE OUTPUT-LINE.
@@ -322,7 +394,7 @@
            TO OUTPUT-LINE
            WRITE OUTPUT-LINE 
            MOVE
-           "                 MOVE INPUT-RECORD TO SORT-RECORD"
+           "                 MOVE INPUT-EXAMPLES TO SORT-RECORD"
            TO OUTPUT-LINE
            WRITE OUTPUT-LINE 
            MOVE
@@ -426,5 +498,105 @@
            TO OUTPUT-LINE
            WRITE OUTPUT-LINE 
 
+
+           END-IF.
+
+           IF WS-CHOICE4 EQUAL "O"
+
+           MOVE
+           "       4000-MERGE-FILE."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+            MOVE
+           "                OPEN INPUT MERGE-INPUT-FILE-1"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+            MOVE
+           "                INPUT MERGE-INPUT-FILE-2"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+            MOVE
+           "                OUTPUT OUTPUT-FILE."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+
+           IF WS-CHOICE3 EQUAL "O"
+
+           MOVE
+           "                MERGE SORT-WORKFILE"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+          
+           END-IF
+           IF WS-CHOICE3 NOT EQUAL "O"
+
+           MOVE "              MERGE OUTPUT-FILE"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+           END-IF
+
+           IF WS-CHOICE3 EQUAL "O"
+
+           MOVE
+           "                ON ASCENDING KEY SORT-DATA"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+
+           END-IF
+
+           IF WS-CHOICE3 NOT EQUAL "O"
+
+           MOVE
+           "                 ON ASCENDING KEY MERGE-DATA-1"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+
+           END-IF
+            MOVE
+           "                USING MERGE-INPUT-FILE-1 MERGE-INPUT-FILE-2"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+           MOVE
+           "                GIVING OUTPUT-FILE."
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+          
+           WRITE OUTPUT-LINE FROM SPACE
+
+           MOVE
+           "                 IF WS-STATUS-MERGE-1 NOT EQUAL TO NoError1"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+           MOVE
+           "                  DISPLAY 'Error during merge1. Status: '" 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+           MOVE "             WS-STATUS-MERGE-1" TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "             STOP RUN" TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "             END-IF." TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE
+           "                 IF WS-STATUS-MERGE-2 NOT EQUAL TO NoError2"
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+           MOVE
+           "                  DISPLAY 'Error during merge2. Status: '" 
+           TO OUTPUT-LINE
+           WRITE OUTPUT-LINE 
+           MOVE "             WS-STATUS-MERGE-2" TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "             STOP RUN" TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "             END-IF." TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+
+           MOVE "             CLOSE MERGE-INPUT-FILE-1." TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "             CLOSE MERGE-INPUT-FILE-2." TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
+           MOVE "             CLOSE OUTPUT-FILE." TO OUTPUT-LINE
+           WRITE OUTPUT-LINE
 
            END-IF.

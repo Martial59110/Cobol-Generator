@@ -58,8 +58,7 @@
            
            05 line 20 col 35 AUTO PIC X(30) VALUE 
            "Exit (Y)".
-           05 line 20 col 50 AUTO PIC X(30) VALUE 
-           "Remove Actual Output File (R)".
+          
 
        01  READ-SCREEN FOREGROUND-COLOR 9.
            05 FILLER PIC X(60) VALUE
