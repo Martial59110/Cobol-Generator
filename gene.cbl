@@ -41,7 +41,7 @@
        01  START-SCREEN FOREGROUND-COLOR 3.
            
            05 FILLER PIC X(24) VALUE "GENERATOR SYSTEM"
-           line 2 col 35  BLANK SCREEN.
+           line 2 col 35  BLANK SCREEN BLINK.
            05 FILLER PIC X(60) VALUE 
            "1. Sequential file"
            line 8 col 35 FOREGROUND-COLOR 9.
